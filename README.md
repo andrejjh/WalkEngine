@@ -1,6 +1,7 @@
 # Walk Engine in a nutshell
 Walk engine is a text to text tool that is highly flexible.
 It takes a *grammar*, *input text* and *program(GDL)* to generate *output text(s)*.
+
 ![graph](./doc/WalkEngine.png)
 
 ## Key features
@@ -18,6 +19,10 @@ It takes a *grammar*, *input text* and *program(GDL)* to generate *output text(s
 
 ## Installation
 ## Input text
+## Grammar
 ````
 
 ````
+## History
+I developed this code generator in 1996 while working on *IVS* (an early VoD system built on top of *Aperios OS*) at Sony Europe.
+On Aperios OS, read [SONY'S PLAN FOR WORLD RECREATION](https://www.wired.com/1999/11/sony-3/) by David Sheff, 1999.
