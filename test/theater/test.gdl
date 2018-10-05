@@ -1,6 +1,6 @@
-$CLASS[act]$SCRIPT[show]Act $VAR[me.id]$CR$FOR[me.scenes,s]$ONDO[s,show]$ENDFOR[]$ENDSCRIPT$ENDCLASS
-$CLASS[scene]$SCRIPT[show]Scene $VAR[me.id]$CR$FOR[me.things,t]$ONDO[t,show]$ENDFOR[]$ENDSCRIPT$ENDCLASS
-$CLASS[fact]$SCRIPT[show]--$VAR[me.com]--$CR$ENDSCRIPT$ENDCLASS
-$CLASS[tirade]$SCRIPT[show]$VAR[me.speaker]:$+$CR$FOR[me.sentences,s]$ONDO[s,show]$ENDFOR[]$-$CR$ENDSCRIPT$ENDCLASS
-$CLASS[sentence]$SCRIPT[show]$VAR[me.rol]$CR$ENDSCRIPT$ENDCLASS
+$CLASS[act]$SCRIPT[show]# Act $VAR[me.id]$CR$FOR[me.scenes,s]$ONDO[s,show]$ENDFOR[]$ENDSCRIPT$ENDCLASS
+$CLASS[scene]$SCRIPT[show]## Scene $VAR[me.id]$CR$FOR[me.things,t]$ONDO[t,show]$ENDFOR[]$ENDSCRIPT$ENDCLASS
+$CLASS[fact]$SCRIPT[show]*$VAR[me.com]*$CR$ENDSCRIPT$ENDCLASS
+$CLASS[tirade]$SCRIPT[show]$VAR[me.speaker]:$CR$FOR[me.sentences,s]$ONDO[s,show]$ENDFOR[]$CR$ENDSCRIPT$ENDCLASS
+$CLASS[sentence]$SCRIPT[show]> $VAR[me.rol]$CR$ENDSCRIPT$ENDCLASS
 $FOR[top.acts,a]$ONDO[a,show]$ENDFOR[]
