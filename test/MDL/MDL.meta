@@ -1,0 +1,26 @@
+MDL             grammar     $mscprogram $toSkip
+toSkip          manyOf      $chartoSkip #null #null #null
+chartoSkip      oneOf ' ' '\t' '\n'
+mscprogram      sequence 'MSC' xScale=?$int yScale=?$int project=#id title=#string $body 'ENDMSC'
+int             sequence '[' value=#integer ']'
+body            manyOf $stmt #null #null #null
+stmt            oneOf $in $at $object $do $skip $send $reply $call $return $comment
+comment         sequence text=#comment
+in              sequence 'IN' objId=#id
+at              sequence 'AT' objId=#id msgId=#id
+object          sequence 'ROLE' xPos=?$int class=#id objId=#id
+do              sequence 'DO' name=#id text=#string
+skip            sequence 'SKIP' deltaY=?$int
+send            sequence 'SEND' deltaX=?$int deltaY=?$int msgId=#id objId=#id sendName=#id sendParams=#string
+reply           sequence 'REPLY' deltaX=?$int deltaY=?$int msgId=#id objId=#id sendId=#id replyName=#id replyParams=#string contName=#id contParams=#string ?$alsoReplies
+alsoReplies     manyOf $also 'ALSO' #null 'ALSO'
+also            sequence deltaX=?$int deltaY=?$int msgId=#id objId=#id sendId=#id contName=#id contParams=#string
+call            sequence 'CALL' deltaX=?$int deltaY=?$int msgId=#id objId=#id callName=#id callParams=#string
+return          sequence 'RETURN' deltaX=?$int deltaY=?$int msgId=#id objId=#id callId=#id replyName=#id replyParams=#string
+# include statement are not used anymore
+include         sequence 'INCLUDE' xPos=?$int file=#pathname name=#id 'WHERE' $wClauseswClauses manyOf $wClause '{' '}' ','
+wClause         oneOf $oClause $cClause $mClause $lClause
+oClause         sequence 'INSTANCE' from=#id '=' to=#id
+cClause         sequence 'CLASS' from=#id '=' to=#id
+mClause         sequence 'MESSAGE' from=#id '=' to=#id
+lClause         sequence 'LABEL' from=#id '=' to= #id

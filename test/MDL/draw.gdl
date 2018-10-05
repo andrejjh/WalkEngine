@@ -1,0 +1,41 @@
+$*[******************************************************************** *
+ * script : MSC.tcl * * This script converts an MSC description into a TCL program. *
+ * copyright : Sony Objective Composer (SOCOM) * * author : andre last update : 19/09/97 * ********************************************************************* *
+ * 12/06/97 Adding CALL and RETURN * * 12/06/97 simplified version - Removing INCLUDE *
+ * 19/09/97 usign IVS_SRC_ROOT environment variable * ********************************************************************* *] 
+$*[-comment class-------] 
+$CLASS[comment]$SCRIPT[toTCL] COMMENT "$VAR[me.text]" $ENDSCRIPT$ENDCLASS 
+$*[-object class-------] 
+$CLASS[object]$SCRIPT[toTCL] 
+$*[static object are translated into OBJECT, dynamic into NEW] 
+$IF[IsStatic] set o_$VAR[me.objId] [OBJECT "$VAR[me.objId]" "$VAR[me.class]"] 
+$ELSE set o_$VAR[me.objId] [NEW "$VAR[me.objId]" "$VAR[me.class]" $IF[me.has_xPos] $SET[me.xPos,p]$VAR[p.value]$ELSE 0$ENDIF ] 
+$ENDIF
+$ENDSCRIPT$ENDCLASS 
+$*[-in class-----------] 
+$CLASS[in]$SCRIPT[toTCL] $SET[FALSE,IsStatic] IN $[$o_]$VAR[me.objId] "???"$ENDSCRIPT$ENDCLASS 
+$*[-at class-----------]
+$CLASS[at]$SCRIPT[toTCL] $SET[FALSE,IsStatic] AT $[$m_]$VAR[me.msgId] "$VAR[me.msgId]"$ENDSCRIPT$ENDCLASS
+$*[-skip class---------]
+$CLASS[skip]$SCRIPT[toTCL] SKIP $IF[me.has_deltaY] $SET[me.deltaY,d]$VAR[d.value]$ELSE 1$ENDIF$ENDSCRIPT$ENDCLASS
+$*[-do class-----------]
+$CLASS[do]$SCRIPT[toTCL] DO $VAR[me.name] "$VAR[me.text]"$ENDSCRIPT$ENDCLASS
+$*[-send class---------]
+$CLASS[send]$SCRIPT[toTCL] set m_$VAR[me.msgId] [SEND $[$o_]$VAR[me.objId] "$VAR[me.sendName]" "$VAR[me.sendParams]" $IF[me.has_deltaX] $SET[me.deltaX,d]$VAR[d.value]$ELSE 0$ENDIF $IF[me.has_deltaY] $SET[me.deltaY,d]$VAR[d.value]$ELSE 0$ENDIF ]$ENDSCRIPT$ENDCLASS 
+$*[-also class---------]
+$CLASS[also]$SCRIPT[toTCL] set m_$VAR[me.msgId] [ALSO $[$o_]$VAR[me.objId] $*[$]$VAR[me.sendId] "$VAR[me.contName]" "$VAR[me.contParams]" $IF[me.has_deltaX] $SET[me.deltaX,d]$VAR[d.value]$ELSE 0$ENDIF $IF[me.has_deltaY] $SET[me.deltaY,d]$VAR[d.value]$ELSE 0$ENDIF ]$ENDSCRIPT$ENDCLASS 
+$*[-reply class--------]
+$CLASS[reply]$SCRIPT[toTCL] set m_$VAR[me.msgId] [REPLY $[$o_]$VAR[me.objId] $[$m_]$VAR[me.sendId] "$VAR[me.replyName]" "$VAR[me.replyParams]" "$VAR[me.contName]" "$VAR[me.contParams]" $IF[me.has_deltaX] $SET[me.deltaX,d]$VAR[d.value]$ELSE 1$ENDIF $IF[me.has_deltaY] $SET[me.deltaY,d]$VAR[d.value]$ELSE 1$ENDIF ] $IF[me.has_AlsoReplies] $ FOR[me.has_AlsoReplies,also] $ ONDO[also,toTCL] $ CR $ ENDFOR[] $ENDIF$ENDSCRIPT$ENDCLASS 
+$*[-call class---------]
+$CLASS[call]$SCRIPT[toTCL] set m_$VAR[me.msgId] [CALL $[$o_]$VAR[me.objId] "$VAR[me.callName]" "$VAR[me.callParams]" $IF[me.has_deltaX] $SET[me.deltaX,d]$VAR[d.value]$ELSE 0$ENDIF $IF[me.has_deltaY] $SET[me.deltaY,d]$VAR[d.value]$ELSE 0$ENDIF ]$CR AT $[$m_]$VAR[me.msgId] "$VAR[me.msgId]"$ENDSCRIPT$ENDCLASS 
+$*[-return class---------]
+$CLASS[return]$SCRIPT[toTCL] set m_$VAR[me.msgId] [RETURN $[$o_]$VAR[me.objId] $[$m_]$VAR[me.callId] "$VAR[me.replyName]" "$VAR[me.replyParams]" $IF[me.has_deltaX] $SET[me.deltaX,d]$VAR[d.value]$ELSE 0$ENDIF $IF[me.has_deltaY] $SET[me.deltaY,d]$VAR[d.value]$ELSE 0$ENDIF ]$CR BACK $[$m_]$VAR[me.msgId] $VAR[me.msgId]"$ENDSCRIPT$ENDCLASS 
+$*[-main program--------] 
+$GETENV[IVS_SRC_ROOT,tclFile] 
+$APPENDSTRING["/MDL/msc.tcl",tclFile]  
+$INSERTVAR[tclFile]
+$CR $CR Init$CR SCALE 
+$IF[top.has_xScale] $SET[top.xScale,s]$VAR[s.value]$ELSE 100$ENDIF
+$IF[top.has_yScale] $SET[top.yScale,s]$VAR[s.value]$ELSE 20$ENDIF
+$CR TITLE "$VAR[top.project]" "$VAR[top.title]" "$ASCTIME "$CR $SET[TRUE,IsStatic] 
+$FOR[top.body,stmt] $ONDO[stmt,toTCL] $CR $ENDFOR[] Exit 

@@ -1,0 +1,17 @@
+MSC [250] [15] FS "Opening a file" 
+ROLE CLIENT p_client 
+ROLE FS fs 
+
+IN p_client 
+
+	SEND p_entry fs OpenFile "fileId, cid" AT fs p_entry
+	DO FileUsageCreation "fileID -> UsageID"
+	REPLY p_exit1 p_client p_entry FileOpened "UsageID" p_continue "<contParams>"
+	AT p_client p_exit1
+
+	SEND p_entry fs CloseFile "fileId, cid" AT fs p_entry
+	DO FileUsageDeletion "fileID -> UsageID"
+	REPLY p_exit2 p_client p_entry FileClosed "UsageID" p_continue "<contParams>"
+	AT p_client p_exit2
+
+ENDMSC

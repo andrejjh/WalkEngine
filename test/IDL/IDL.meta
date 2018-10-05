@@ -1,0 +1,129 @@
+IDL                 grammar   $main $toSkip
+#
+toSkip               manyOf    $chartoSkip #null #null #null
+chartoSkip           oneOf     $define $commentBlock ' ' '\t' '\n'
+commentBlock         manyOf    #char '/*' '*/' #null
+commentLine          sequence  $comment
+comment              token    '^[/]{2}[^\n]*'
+restOfLine           token     '^[^\n]*'
+scopedid             token     '^[_A-Z:a-z0-9]+'
+define               sequence  '#define' $restOfLine
+#
+main                 sequence  $definitions
+definitions          manyOf    $definition #null #eof #null
+definition           oneOf    $type_dcl $const_dcl $except_dcl $interface_dcl $module  $commentLine $Difdef
+Difdef                sequence  '#' $if name=#id $ifDefinitions
+ifDefinitions        manyOf    $definition #null '#endif' #null
+if                   oneOf     $ifdef $ifndef
+ifdef                sequence  'ifdef'
+ifndef               sequence  'ifndef'
+empty                sequence  #null
+module               sequence  'module'  name=#id  $_module_body ';'
+_module_body         manyOf    $definition '{' '}'  #null
+interface_dcl        sequence  $interface_header $interface_body ';'
+forward_dcl          sequence  'interface' name=#id
+interface_header     sequence  'interface' name=#id ?$inheritance_spec
+interface_body       manyOf    $export '{' '}' #null
+Eifdef               sequence  '#' $if name=#id $exports
+exports              manyOf    $export #null '#endif' #null
+export               oneOf     $op_dcl $type_dcl $const_dcl $except_dcl $attr_dcl $commentLine $Eifdef
+inheritance_spec     sequence  ':' $scopedNames
+scopedNames          manyOf    $scoped_name #null #null ','
+#scoped_name         manyOf    $identifier #null #null '::'
+scoped_name          sequence  $scopedid
+const_dcl            sequence  'const' $const_type $identifier '=' $const_exp ';'
+const_type           oneOf     $integer_type $char_type $boolean_type $floating_pt_type $string_type $scoped_name
+const_exp            sequence  $or_expr
+or_expr              sequence  $xor_expr ?$_or_expr
+_or_expr             sequence  '|' $xor_expr
+xor_expr             sequence  $and_expr ?$_xor_expr
+_xor_expr            sequence  '^' $and_expr
+and_expr             sequence  $shift_expr ?$_and_expr
+_and_expr            sequence  '&' $shift_expr
+shift_expr           sequence  $add_expr ?$_shift_expr
+_shift_expr          oneOf     $_shift_expr1 $_shift_expr2
+_shift_expr1         sequence  '<<' $add_expr
+_shift_expr2         sequence  '>>' $add_expr
+add_expr             sequence  $mult_expr ?$_add_expr
+_add_expr            oneOf     $_add_expr1 $_add_expr2
+_add_expr1           sequence  $add_expr '+' $mult_expr
+_add_expr2           sequence  $add_expr '-' $mult_expr
+mult_expr            sequence  $unary_expr ?$_mult_expr
+_mult_expr           oneOf     $_mult_expr1 $_mult_expr2 $_mult_expr3
+_mult_expr1          sequence  '*' $unary_expr
+_mult_expr2          sequence  '/' $unary_expr
+_mult_expr3          sequence  '%' $unary_expr
+unary_expr           sequence  ?$unary_operator $primary_expr
+unary_operator       oneOf     '-' '+' '~'
+primary_expr         oneOf     $scoped_name $literal $_const_expr
+_const_expr          sequence  '(' $const_expr ')'
+literal              oneOf     $stringLiteral $booleanLiteral $integerLiteral $charLiteral
+stringLiteral        sequence  value=#string
+booleanLiteral       sequence  value=#boolean
+integerLiteral       sequence  value=$integerValue
+integerValue         token     '^[0-9]+'
+charLiteral          sequence  value=$charValue
+charValue            token     '^[\'].[\']'
+positive_int_const   sequence  $const_exp
+type_dcl             oneOf     $typedef $struct_type $union_type $enum_type
+typedef              sequence  'typedef' $type_spec $declarators ';'
+type_spec            oneOf     $simple_type_spec $constr_type_spec
+simple_type_spec     oneOf     $scoped_name $base_type_spec $template_type_spec
+base_type_spec       oneOf     $object_type $floating_pt_type $integer_type $char_type $boolean_type $octet_type $any_type
+template_type_spec   oneOf     $sequence_type $string_type
+constr_type_spec     oneOf     $struct_type $union_type $enum_type
+declarators          manyOf    $declarator #null #null ','
+declarator           sequence  $identifier ?$array_declarator
+floating_pt_type     oneOf     'float' 'double'
+integer_type         oneOf     $signed_int $unsigned_int
+signed_int           oneOf     $long_int $short_int
+long_int             sequence  'long' longlong=?'long'
+short_int            sequence  'short'
+unsigned_int         sequence  'unsigned' $signed_int
+char_type            sequence  'char'
+boolean_type         sequence  'boolean'
+octet_type           sequence  'octet'
+any_type             sequence  'any'
+object_type          sequence  'Object'
+struct_type          sequence  'struct' name=#id $members_list ';'
+members_list         manyOf    $_member '{'  '}' #null
+_member              oneOf     $member $commentLine
+member               sequence  $type_spec $declarators ';'
+union_type           sequence  'union' #id 'switch' '(' $switch_type_spec ')' $switch_body ';'
+switch_type_spec     oneOf     $integer_type $char_type $boolean_type $enum_type $scoped_name
+switch_body          manyOf    $case '{' '}' ';'
+case                 sequence  $case_label $element_spec
+case_label           oneOf     $_case_label $_case_default
+_case_label          sequence  'case' $const_exp ':'
+_case_default        sequence  'default' ':'
+element_spec         sequence  $type_spec $declarator
+enum_type            sequence  'enum' name=#id $enumerators ';'
+enumerators          manyOf    $enumerator '{' '}' ','
+enumerator           sequence  name=#id
+sequence_type        sequence  'sequence' '<' $_sequence_type1 ?$_sequence_type2 '>'
+_sequence_type1      oneOf     $simple_type_spec $scoped_name
+_sequence_type2      sequence  ',' $positive_int_const
+string_type          sequence  'string' ?$stringSize
+stringSize           sequence  '<' $positive_int_const '>'
+array_declarator     manyOf    $fixed_array_size #null #null #null
+fixed_array_size     sequence  '[' $positive_int_const ']'
+attr_dcl             sequence  ?$readonly 'attribute' $param_type_spec $declarators ';'
+readonly             sequence  'readonly'
+except_dcl           sequence  'exception' name=#id $members_list ';'
+op_dcl               sequence  ?$op_attribute $op_type_spec name=#id  $parameter_dcls ?$raises_expr ?$context_expr  ';'
+op_attribute         sequence  'oneway'
+op_type_spec         oneOf     $param_type_spec $void
+void                 sequence  'void'
+parameter_dcls       manyOf    ?$param_dcl '(' ')' ','
+param_dcl            sequence  ?$commentLine $param_attribute $param_type_spec $declarator
+param_attribute      oneOf     $in $out $inout
+in                   sequence  'in'
+out                  sequence  'out'
+inout                sequence  'inout'
+raises_expr          sequence  'raises' $_raises
+_raises              manyOf    $scoped_name '(' ')' ','
+context_expr         sequence  'context' $_contexts
+_contexts            manyOf    $string_literal '(' ')' ','
+param_type_spec      oneOf     $scoped_name $base_type_spec $string_type $sequence_type
+# added by me...
+identifier           token     '^[a-zA-Z][a-zA-Z_0-9]*'

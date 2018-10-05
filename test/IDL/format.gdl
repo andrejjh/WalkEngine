@@ -1,0 +1,183 @@
+$*[IDL compiler : reformat IDL input file]
+$*[ andre 23/01/98---------------------------]
+$CLASS[scoped_name]$SCRIPT[Show]$VAR[me.scopedid] $ENDSCRIPT$ENDCLASS
+$CLASS[sequence_type]$SCRIPT[Show]
+sequence<
+$SET[me._sequence_type1,st1]$ONDO[st1,Show]
+>
+$ENDSCRIPT$ENDCLASS
+$CLASS[enum_type]$SCRIPT[Show]
+enum $VAR[me.name] {$+
+$FOR[me.enumerators,e]
+$VAR[e.name]
+$ENDFOR[,]$-
+};
+$ENDSCRIPT$ENDCLASS
+$CLASS[octet_type]$SCRIPT[Show]octet $ENDSCRIPT$ENDCLASS
+$CLASS[boolean_type]$SCRIPT[Show]boolean $ENDSCRIPT$ENDCLASS
+$CLASS[string_type]$SCRIPT[Show]string $ENDSCRIPT$ENDCLASS
+$CLASS[char_type]$SCRIPT[Show]char $ENDSCRIPT$ENDCLASS
+$CLASS[object_type]$SCRIPT[Show]Object $ENDSCRIPT$ENDCLASS
+$CLASS[short_int]$SCRIPT[Show]short $ENDSCRIPT$ENDCLASS
+$CLASS[long_int]$SCRIPT[Show]long $IF[me.has_longlong]long $ENDIF$ENDSCRIPT$ENDCLASS
+$CLASS[unsigned_int]$SCRIPT[Show]
+unsigned $SET[me.signed_int,si]$ONDO[si,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[empty]$SCRIPT[Show]$*[-------------------------------------]
+//empty$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[commentLine]$SCRIPT[Show]$*[-------------------------------------]
+$VAR[me.comment]$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[declarator]$SCRIPT[Show]$*[-------------------------------------]
+$VAR[me.identifier]
+$ENDSCRIPT$ENDCLASS
+$CLASS[typedef]$SCRIPT[Show]$*[-------------------------------------]
+typedef $SET[me.type_spec,ts]$ONDO[ts,Show]
+$FOR[me.declarators,d]
+$ONDO[d,Show]
+$ENDFOR[,]
+;
+$ENDSCRIPT$ENDCLASS
+$CLASS[member]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.type_spec,ts]$ONDO[ts,Show]
+$FOR[me.declarators,d]
+$ONDO[d,Show]
+$ENDFOR[,]
+;
+$ENDSCRIPT$ENDCLASS
+$CLASS[struct_type]$SCRIPT[Show]$*[-------------------------------------]
+struct $VAR[me.name] {$+$CR
+$FOR[me.members_list,m]
+$IF[m.isA="commentLine"]$ELSE$CR$ENDIF
+$ONDO[m,Show]
+$ENDFOR[]$-$CR
+};
+$ENDSCRIPT$ENDCLASS
+$CLASS[const_exp]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.or_expr,oe]$ONDO[oe,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[or_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.xor_expr,xe]$ONDO[xe,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[xor_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.and_expr,ae]$ONDO[ae,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[and_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.shift_expr,se]$ONDO[se,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[shift_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.add_expr,ae]$ONDO[ae,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[add_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.mult_expr,me]$ONDO[me,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[mult_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.unary_expr,ue]$ONDO[ue,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[unary_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.primary_expr,pe]$ONDO[pe,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[scoped_name]$SCRIPT[Show]$*[-------------------------------------]
+$VAR[me.scopedid]
+ $ENDSCRIPT$ENDCLASS
+$CLASS[integerLiteral]$SCRIPT[Show]$VAR[me.value]$ENDSCRIPT$ENDCLASS
+$CLASS[stringLiteral]$SCRIPT[Show]"$VAR[me.value]"$ENDSCRIPT$ENDCLASS
+$CLASS[booleanLiteral]$SCRIPT[Show]$VAR[me.value]$ENDSCRIPT$ENDCLASS
+$CLASS[charLiteral]$SCRIPT[Show]$VAR[me.value]$ENDSCRIPT$ENDCLASS
+$CLASS[const_dcl]$SCRIPT[Show]$*[-------------------------------------]
+const $SET[me.const_type,ct]$ONDO[ct,Show] $VAR[me.identifier] = $SET[me.const_exp,ce]$ONDO[ce,Show];
+$ENDSCRIPT$ENDCLASS
+$CLASS[param_dcl]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.param_attribute,pa]$VAR[pa.isA]
+ $SET[me.param_type_spec,pts]$ONDO[pts,Show]
+ $SET[me.declarator,d]$ONDO[d,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[op_dcl]$SCRIPT[Show]$*[-------------------------------------]
+$IF[me.has_op_attribute]$VAR[me.op_attribute]$ENDIF
+$SET[me.op_type_spec,ots]$ONDO[ots,Show]
+$VAR[me.name](
+$FOR[me.parameter_dcls,p]
+$ONDO[p,Show]
+$ENDFOR[,]
+)
+$IF[me.has_raises_expr]
+$SET[me.raises_expr,r]$ONDO[r,Show]
+$ENDIF
+$IF[me.has_context_expr]
+$SET[me.context_expr,c]$ONDO[c,Show]
+$ENDIF
+;$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[void]$SCRIPT[Show]void $ENDSCRIPT$ENDCLASS
+$CLASS[raises_expr]$SCRIPT[Show]$*[-------------------------------------]
+raises (
+$FOR[me._raises,r]
+$ONDO[r,Show]
+$ENDFOR[,])$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[context_expr]$SCRIPT[Show]$*[-------------------------------------]
+context...
+$ENDSCRIPT$ENDCLASS
+$CLASS[Difdef]$SCRIPT[Show]$*[-------------------------------------]
+#ifdef $VAR[me.name]$+$CR
+$FOR[me.ifDefinitions,e]
+$IF[b.isA="commentLine"]$ELSE$CR$ENDIF
+$ONDO[e,Show]
+$ENDFOR[]$-$CR
+#endif$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[Eifdef]$SCRIPT[Show]$*[-------------------------------------]
+#ifdef $VAR[me.name]$+$CR
+$FOR[me.exports,e]
+$IF[b.isA="commentLine"]$ELSE$CR$ENDIF
+$ONDO[e,Show]
+$ENDFOR[]$-$CR
+#endif$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[attr_dcl]$SCRIPT[Show]$*[-------------------------------------]
+$IF[me.has_readonly]readonly $ENDIF
+attribute $SET[me.param_type_spec,pts]$ONDO[pts,Show]
+ $FOR[me.declarators,d]
+$ONDO[d,Show]
+$ENDFOR[,]
+;$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[interface_dcl]$SCRIPT[Show]$*[-------------------------------------]
+interface $SET[me.interface_header,h]$VAR[h.name]
+$IF[me.has_inheritance_spec]
+:
+$SET[me.inheritance_spec,is]
+$FOR[is.scoped_name,sn]
+$ ONDO[sn,Show]
+$ENDFOR[:]
+$ENDIF
+{$+$CR
+$FOR[me.interface_body,b]
+$IF[b.isA="commentLine"]$ELSE$CR$ENDIF
+$ONDO[b,Show]
+$ENDFOR[]$-$CR
+};
+$ENDSCRIPT$ENDCLASS
+$CLASS[except_dcl]$SCRIPT[Show]$*[-------------------------------------]
+exception $VAR[me.name]{$+
+$FOR[me.members_list,m]
+$ONDO[m,Show]
+$ENDFOR[]$-
+};
+$ENDSCRIPT$ENDCLASS
+$CLASS[moduleBody]$SCRIPT[Show]$*[-------------------------------------]
+module $VAR[me.id] $SET[me.body,b]$ONDO[b,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[module]$SCRIPT[Show]$*[-------------------------------------]
+module $VAR[me.name] {$+$CR
+$FOR[me._module_body,b]
+$IF[b.isA="commentLine"]$ELSE$CR$ENDIF
+$ONDO[b,Show]
+$ENDFOR[]$-$CR
+};
+$ENDSCRIPT$ENDCLASS
+$*[main start here]$*[-------------------------------------]
+$FOR[top.definitions,d]
+$ONDO[d,Show]$CR
+$ENDFOR[]

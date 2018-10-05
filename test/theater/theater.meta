@@ -1,0 +1,17 @@
+theather        grammar $play $skip
+skip            manyOf $comment #null #null #null
+comment         sequence '//' $rol $eol
+play            sequence name=#id $eol $acts
+acts            manyOf $act #null #null #null
+act             sequence 'Act ' id=#id $scenes
+scenes          manyOf $scene $eol #null #null
+scene           sequence 'Scene ' id=#integer $things
+things          manyOf $thing $eol $eol #null
+thing           oneOf $tirade $fact
+tirade          sequence speaker=#id ':' $sentences
+sentences       manyOf $sentence $eol $eol #null
+sentence        sequence $rol $eol
+fact           sequence '<<' $com '>>' $eol
+rol             token '^.+'
+eol             token '^\n'
+com             token '[^>]+'

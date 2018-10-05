@@ -1,0 +1,7 @@
+.bundle
+log/*.log
+bin/
+tmp/
+
+# Ignore MacOS finder
+.DS_Store

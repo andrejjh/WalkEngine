@@ -1,0 +1,205 @@
+$*[IDL to C converter : produce a C header file]
+$*[ andre 06/02/98---------------------------]
+$SCRIPT[FindParent]
+$FOR[interfaces,i]
+$ IF[i.scopedName=parentName]
+$    SET[i,me.baseClass]$CR
+$ ENDIF
+$ENDFOR[]
+$ENDSCRIPT
+$SCRIPT[BuildScopedName]
+$SET[NULLSTRING,me.scopedName]
+$SET[NULLSTRING,me.userName]
+$FOR[stack,elem]
+$ APPEND[elem.name,me.scopedName]$APPENDSTRING["::",me.scopedName]
+$ APPEND[elem.name,me.userName]$APPENDSTRING["_",me.userName]
+$ENDFOR[]
+$*[remove trailing :: & -]
+$SUBSTR[me.scopedName,me.scopedName,0,-2]
+$SUBSTR[me.userName,me.userName,0,-1]
+$ENDSCRIPT
+$CLASS[scoped_name]$SCRIPT[Show]$VAR[me.scopedid] $ENDSCRIPT$ENDCLASS
+$CLASS[sequence_type]$SCRIPT[Show]
+sequence<
+$SET[me._sequence_type1,st1]$ONDO[st1,Show]
+>
+$ENDSCRIPT$ENDCLASS
+$CLASS[enum_type]$SCRIPT[Show]
+enum $VAR[me.name] {$+
+$FOR[me.enumerators,e]
+$VAR[e.name]
+$ENDFOR[,]$-
+};
+$ENDSCRIPT$ENDCLASS
+$CLASS[octet_type]$SCRIPT[Show]octet $ENDSCRIPT$ENDCLASS
+$CLASS[boolean_type]$SCRIPT[Show]boolean $ENDSCRIPT$ENDCLASS
+$CLASS[string_type]$SCRIPT[Show]char * $ENDSCRIPT$ENDCLASS
+$CLASS[char_type]$SCRIPT[Show]char $ENDSCRIPT$ENDCLASS
+$CLASS[object_type]$SCRIPT[Show]Object $ENDSCRIPT$ENDCLASS
+$CLASS[short_int]$SCRIPT[Show]short $ENDSCRIPT$ENDCLASS
+$CLASS[long_int]$SCRIPT[Show]long $IF[me.has_longlong]long $ENDIF$ENDSCRIPT$ENDCLASS
+$CLASS[unsigned_int]$SCRIPT[Show]
+unsigned $SET[me.signed_int,si]$ONDO[si,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[empty]$SCRIPT[Show]$*[-------------------------------------]
+//empty$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[commentLine]$SCRIPT[Show]$*[-------------------------------------]
+$VAR[me.comment]$CR
+$ENDSCRIPT$ENDCLASS
+$CLASS[declarator]$SCRIPT[Show]$*[-------------------------------------]
+$VAR[me.identifier]
+$ENDSCRIPT$ENDCLASS
+$CLASS[typedef]$SCRIPT[Show]$*[-------------------------------------]
+typedef $SET[me.type_spec,ts]$ONDO[ts,Show]
+$FOR[me.declarators,d]
+$ONDO[d,Show]
+$ENDFOR[,]
+;
+$ENDSCRIPT$ENDCLASS
+$CLASS[member]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.type_spec,ts]$ONDO[ts,Show]
+$FOR[me.declarators,d]
+$ONDO[d,Show]
+$ENDFOR[,]
+;
+$ENDSCRIPT$ENDCLASS
+$CLASS[struct_type]$SCRIPT[Show]$*[-------------------------------------]
+struct $VAR[me.name] {$+$CR
+$FOR[me.members_list,m]
+$IF[m.isA="commentLine"]$ELSE$CR$ENDIF
+$ONDO[m,Show]
+$ENDFOR[]$-$CR
+};
+$ENDSCRIPT$ENDCLASS
+$CLASS[const_exp]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.or_expr,oe]$ONDO[oe,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[or_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.xor_expr,xe]$ONDO[xe,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[xor_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.and_expr,ae]$ONDO[ae,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[and_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.shift_expr,se]$ONDO[se,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[shift_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.add_expr,ae]$ONDO[ae,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[add_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.mult_expr,me]$ONDO[me,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[mult_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.unary_expr,ue]$ONDO[ue,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[unary_expr]$SCRIPT[Show]$*[-------------------------------------]
+$SET[me.primary_expr,pe]$ONDO[pe,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[scoped_name]$SCRIPT[Show]$*[-------------------------------------]
+$VAR[me.scopedid]
+ $ENDSCRIPT$ENDCLASS
+$CLASS[integerLiteral]$SCRIPT[Show]$VAR[me.value]$ENDSCRIPT$ENDCLASS
+$CLASS[stringLiteral]$SCRIPT[Show]"$VAR[me.value]"$ENDSCRIPT$ENDCLASS
+$CLASS[booleanLiteral]$SCRIPT[Show]$VAR[me.value]$ENDSCRIPT$ENDCLASS
+$CLASS[charLiteral]$SCRIPT[Show]$VAR[me.value]$ENDSCRIPT$ENDCLASS
+$CLASS[const_dcl]$SCRIPT[Show]$*[-------------------------------------]
+const $SET[me.const_type,ct]$ONDO[ct,Show] $VAR[me.identifier] = $SET[me.const_exp,ce]$ONDO[ce,Show];
+$ENDSCRIPT$ENDCLASS
+$CLASS[void]$SCRIPT[Show]void $ENDSCRIPT$ENDCLASS
+$CLASS[raises_expr]$SCRIPT[Show]$*[-------------------------------------]
+$ENDSCRIPT$ENDCLASS
+$CLASS[context_expr]$SCRIPT[Show]$*[-------------------------------------]
+$ENDSCRIPT$ENDCLASS
+$CLASS[Difdef]$SCRIPT[Show]$*[-------------------------------------]
+$ENDSCRIPT$ENDCLASS
+$CLASS[Eifdef]$SCRIPT[Show]$*[-------------------------------------]
+$ENDSCRIPT$ENDCLASS
+$CLASS[param_dcl]$SCRIPT[Show]$*[-------------------------------------]
+ $SET[me.param_type_spec,pts]$ONDO[pts,Show]
+ $SET[me.declarator,d]$ONDO[d,Show]
+$ENDSCRIPT$ENDCLASS
+$CLASS[op_dcl]$*[-------------------------------------]
+$SCRIPT[Show]
+$SET[me.op_type_spec,ots]$ONDO[ots,Show]
+$DO[BuildScopedName]$VAR[me.userName]_$VAR[me.name]($VAR[me.userName] obj,
+$FOR[me.parameter_dcls,p]
+$ONDO[p,Show],
+$ENDFOR[]
+ Environment* env);$CR
+$ENDSCRIPT
+$ENDCLASS
+$CLASS[attr_dcl]$*[-------------------------------------]
+$SCRIPT[Show]
+$DO[BuildScopedName]
+$SET[me.param_type_spec,pts]
+$FOR[me.declarators,decl]
+$  IF[me.has_readonly]
+	/* $VAR[me.userName]_$VAR[decl.identifier] is readonly */$CR
+$  ELSE
+void set_$VAR[me.userName]_$VAR[decl.identifier]($VAR[me.userName] obj, $ONDO[pts,Show], Environment* env);
+/* Set $VAR[me.userName]_$VAR[decl.identifier] */$CR
+$  ENDIF
+$    ONDO[pts,Show] get_$VAR[me.userName]_$VAR[decl.identifier]($VAR[me.userName] obj, Environment* env);
+/* Get $VAR[me.userName]_$VAR[decl.identifier] */$CR
+$ENDFOR[]
+$ENDSCRIPT$ENDCLASS
+$CLASS[interface_dcl]$*[-------------------------------------]
+$SCRIPT[Show]
+$ADD[stack,me]
+$SET[me.interface_header,header]$SET[header.name,me.name]
+$IF[header.has_inheritance_spec]
+$ SET[header.inheritance_spec,spec]
+$ FOR[spec.scopedNames,sn]
+$ SET[sn.scopedid,parentName]
+$   DO[FindParent]
+$ ENDFOR[]
+$ENDIF
+$ADD[interfaces,me]
+$DO[BuildScopedName]
+/* Interface $VAR[me.userName] */$+$CR
+typedef Object $VAR[me.userName];$CR
+$ IF[me.has_baseClass]$SET[me.baseClass,baseClass]
+$    ONDO[baseClass,oper]$CR
+$ ENDIF
+$REMOVE[stack,me]
+$ONDO[me,oper]
+$-$CR
+$ENDSCRIPT
+$SCRIPT[oper]
+$ADD[stack,me]
+$FOR[me.interface_body,ib]
+$ ONDO[ib,Show]$CR
+$ENDFOR[]
+$REMOVE[stack,me]
+$ENDSCRIPT
+$ENDCLASS
+$CLASS[except_dcl]$*[-------------------------------------]
+$SCRIPT[Show]
+$ADD[stack,me]
+$DO[BuildScopedName]
+#define ex_$VAR[me.userName] "ex_$DO[me.userName]"$CR
+$REMOVE[stack,me]
+$ENDSCRIPT$ENDCLASS
+$CLASS[module]$*[-------------------------------------]
+$SCRIPT[Show]
+$ADD[stack,me]
+// Defintition  of module $VAR[me.name]$CR
+// Generated at $ASCTIME$CR
+$CR
+#ifndef _$VAR[me.name]_H_$CR
+#define _$VAR[me.name]_H_$CR
+$CR
+$FOR[me._module_body,interface]
+$ ONDO[interface,Show]
+$ENDFOR[]
+#endif
+$REMOVE[stack,me]
+$ENDSCRIPT$ENDCLASS
+$*[main start here]$*[-------------------------------------]
+$CLEAN[stack]
+$CLEAN[interfaces]
+$CR
+$FOR[top.definitions,d]
+$ ONDO[d,Show]$CR
+$ENDFOR[]

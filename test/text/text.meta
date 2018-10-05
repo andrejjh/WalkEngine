@@ -1,0 +1,7 @@
+theather        grammar $text $skip
+skip            sequence '<<>>'
+text            sequence $lines
+lines           manyOf $line #null $eol #null
+line            sequence value=$rol $eol
+eol             token '^\n'
+rol             token '^.+'

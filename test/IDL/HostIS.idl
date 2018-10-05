@@ -1,0 +1,131 @@
+module CosNaming{
+  interface NamingContext{
+	enum NotFoundReason { missing_node, not_context, not_object };
+	exception NotFound { NotFoundReason why; Name rest_of_name; }; 
+	exception CannotProceed { NamingContext cxt; Name rest_of_name; }; 
+	exception InvalidName {}; exception AlreadyBound {}; exception NotEmpty {};
+
+	Object resolve (in Name n) raises (NotFound, CannotProceed, InvalidName); 
+        void bind (in Name n, in Object obj) raises (NotFound, CannotProceed, InvalidName, AlreadyBound);
+	void bind_context (in Name n, in NamingContext nc) raises (NotFound, CannotProceed, InvalidName, AlreadyBound);
+	void rebind (in Name n, in Object obj) raises (NotFound, CannotProceed, InvalidName);
+	void rebind_context (in Name n, in NamingContext nc) raises (NotFound, CannotProceed, InvalidName);
+	void unbind (in Name n) raises (NotFound, CannotProceed, InvalidName); 
+  };
+};
+
+module DSM {
+  struct AppNPT {s_long aSeconds; u_long aMicroSeconds;}; // Normal Play Time 
+  struct DateTime 
+		{ // tm from ANSI C std. 
+		s_long tm_sec; // seconds, 0-59 
+		s_long tm_min; // minutes, 0-59 
+		s_long tm_hour; // hours, 0-23 
+		s_long tm_mday; // day of the month, 1-31 
+		s_long tm_mon; // months since Jan, 0-31 
+		s_long tm_year; //years from 1900 
+		s_long tm_wday; // days since Sunday, 0-6 
+		s_long tm_yday; // days since Jan 31, 0-365 
+		s_long tm_isdst;}; // Daylight Savings Time indicator
+
+  interface Base{};
+  interface Access{};
+
+  interface File : Base, Access {
+
+    attribute opaque Content; // file content
+
+    readonly attribute u_longlong ContentSize; // file content size in octets
+
+    void read (
+      in u_longlong aOffset,
+      in u_long aSize,
+      in boolean aReliable,
+      out opaque rData)
+      raises (INV_OFFSET, INV_SIZE, READ_LOCKED);
+
+  };
+
+  interface Directory : Access, CosNaming::NamingContext {
+
+    void open(
+      in PathType aPathType,
+      in PathSpec rPathSpec,
+      out ObjRefs resolvedRefs)
+      raises(OPEN_LIMIT, NO_AUTH , UNK_USER, SERVICE_XFR,
+      NOT_FOUND, CANNOT_PROCEED, INV_NAME);
+
+    void close ();
+
+    void get(
+      in PathType aPathType,
+      in PathSpec rPathSpec,
+      out PathValues rPathValues)
+      raises(NO_AUTH, UNK_USER, SERVICE_XFR,
+      NOT_FOUND, CANNOT_PROCEED, INV_NAME);
+ void put( in PathType aPathType, in PathSpec rPathSpec, in PathValues rPathValues) raises(UNK_USER, NO_AUTH, SERVICE_XFR, NOT_FOUND, CANNOT_PROCEED, INV_NAME);
+  };
+
+  interface ServiceGateway:Session,Directory{
+  };
+};
+
+module IS {
+ interface ISEngine {
+	enum Status { idle, started, stopped};	
+	readonly attribute Status status;
+
+	void AddOutput (in IS::Output o);
+	void RemoveOutput (in IS::Output o);
+	void Start();
+	void Stop();
+  };
+
+  interface ObjectCarousel {
+	readonly attribute DSM::ServiceGateway root;
+	readonly attribute DSM::AppNPT aLoopTime;
+
+	void Init(in DSM:ServiceGateway aRoot, in DSM::AppNPT aLoopTime);
+	void AddApplication(in IS::Application app);
+	void RemoveApplication(in IS::Application app);
+	void SetStartUp(in IS::Application app);
+  };
+
+  interface Output {
+	enum Status {prepared, writing, done};
+	readonly attribute Status status;
+  };
+
+  interface OutputFile : Output {
+	enum Format {dsmccSection, mpeg2TS };
+	readonly attribute long fileSize;
+
+        void SetPathName(in string aPathName);
+        void SetCarousel(in IS::ObjectCarousel carousel);// one carousel only 
+  };
+
+  interface Output2Stream : IS::Output {
+        readonly attribute DSM::DateTime startTime,stopTime;
+        attribute long bandwidth;
+
+	void AddCarousel(in IS::ObjectCarousel aCarousel);
+	void RemoveCarousel (in IS::ObjectCarousel aCarousel);
+	void Attach (in IS::PhysicalChannel channel);
+	void Play();// start streaming
+	void Stop();// stop streaming
+  };
+
+  interface PhysicalChannel {
+	readonly attribute long maxBandwidth;
+  };
+  interface ATM : PhysicalChannel{};
+  interface Ethernet : PhysicalChannel{};
+  interface DVB_ASI : PhysicalChannel{};
+ 	
+  interface Application {
+	attribute long Id;
+	attribute short version;
+	attribute DSM:File initialObject;
+};
+
+};

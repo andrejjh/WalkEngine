@@ -1,0 +1,10 @@
+US PATENT
+http://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=/netahtml/PTO/search-bool.html&r=1&f=G&l=50&d=PALL&RefSrch=yes&Query=PN/6408431
+
+export IVS_SRC_ROOT=/Users/aheugheb/fromPBG4/Walk/test
+Generate MSC
+../../bin/WalkEngine MDL.meta test.mdl draw.gdl out.tcl
+
+Wish
+wish out.tcl -notes
+
