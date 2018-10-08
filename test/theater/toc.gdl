@@ -1,0 +1,7 @@
+$VAR[top.name]$CR
+$FOR[top.acts,a]
+  Act $VAR[a.id]$CR
+  $FOR[a.scenes,s]
+    Scene $VAR[s.id]:$VAR[s.location]$CR
+  $ENDFOR[]
+$ENDFOR[]
