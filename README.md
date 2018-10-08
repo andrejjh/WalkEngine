@@ -6,11 +6,12 @@ It takes a *grammar*, *input text* and *program(GDL)* to generate *output text(s
 
 ## Key features
 
-* Walk can ingest any  *input text*, as a *grammar* explains how it should be interpreted.
-* Walk can generate any *output text*, as stated in the *GDL program*.
-* Walk is written is C++ and therefore incredibly fast.
+* Walk is highly **flexible** and can ingest any  *input text*, as a *grammar* explains how this input should be interpreted.
+* Walk can generate any text , as you describe in a *GDL program* what will appear in the *output text*.
+* Walk follows a **minimalist approach** and only depends on standard C++ Libraries such as *stdio, stdlib, iostream and regex*.
+* Walk is completely written is C++ and thus **incredibly fast**.
 
-## How to start?
+## Where to begin?
 0. Installation
 1. Input text
 2. Why do I need a grammar?
@@ -26,36 +27,39 @@ make
 This should normally results in a WalkEngine appearing in the /bin directory.
 
 ## 1. Input text
-Walk engine was designed to take any text file in input. Some examples are provided in the /test directory. Have a look at [The Tragedy of Hamlet, Prince of Denmark](./test/theater/HamletActI.tht)
-Don't be worried by the .tht extension, it simply there to remind you this text file follows the **Theater** grammar.
+Walk engine was designed to take any text file in input. Some examples are provided in the /test directory. Have a look at [The Tragedy of Hamlet, Prince of Denmark](./test/theater/HamletActI.tht) as an example.
+Don't be worried by the .tht extension, it is simply there to remind you this text follows the **Theater** grammar.(see below)
 
 ## 2. Grammar
-A grammar describe in *simple rules* how you input text file is structured, eg theater.meta start with these four lines:
+A grammar describes in a set of *simple rules* how you input text is structured and should be interpreted, eg theater.meta starts like this:
 ````
 theater        grammar $play $skip
 skip            manyOf $comment #null #null #null
 comment         sequence '//' $rol $eol
 play            sequence name=$rol $eol $acts
 ...
+rol             token '^.+'
+eol             token '^\n'
 ````
-The first line tell you that *theater* is a **grammar**, $play is the grammar's main rule and $skip explain what part of the text should be ignored (one or more comment(s) such as ''// this is a comment.'). The last line informs you that the input text is a *play* including a name and some *acts*.
+The first line tell you that *'theater'* is a **grammar**, *'play'* is the grammar's main rule and *'skip'* explains what text should be ignored (in this case one or more comment(s) such as ''// this is a comment.'). The last line informs you that the input text is a *play* including a name (*'rol'* stands for rest of line, *'eol* for end of line') and *acts*.
 Four types of rules are supported in a *grammar*: *sequence*, selection (=*oneOf*), repetition (=*manyOf*) and regular expressions (=*token*).
 
 ## 3. GDL
-Generation Description Language (or GDL) is a descriptive programming language that helps you to customize the output(s) to generate.
+Generation Description Language (or GDL) is a programming language that helps you to describe the output(s) to generate.
 ### 3.1 Hello World!
 ````
 Hello World!
 ````
-This (simple) GDL program will output the string 'Hello World!'
+This GDL program will output the text: 'Hello World!'.
 
 ### 3.2 Play's Title
 ````
 $VAR[top.name]
 ````
-This will produce 'The Tragedy of Hamlet, Prince of Denmark' the *name* of the *play*.
+This will produce 'The Tragedy of Hamlet, Prince of Denmark' the *name* of the *play*, the top object of a theater grammar.
 
 ### 3.2 Play Table of content
+This GDL program:
 ````
 $VAR[top.name]$CR
 $FOR[top.acts,a]
@@ -65,7 +69,7 @@ $FOR[top.acts,a]
   $ENDFOR[]
 $ENDFOR[]
 ````
-This will produce a table of contents for Hamlet's play:
+will produce a table of contents for Hamlet's play:
 ````
 The Tragedy of Hamlet, Prince of Denmark
 Act I
@@ -94,6 +98,20 @@ Act I
     Scene 1: A churchyard.
     Scene 2: A hall in the castle.
 ````
+The rest is ignored.
+
+### 3.3 Marked down formatting
+You want to format the text in markdown, see this:
+````
+$CLASS[act]$SCRIPT[show]# Act $VAR[me.id]$CR$FOR[me.scenes,s]$ONDO[s,show]$ENDFOR[]$ENDSCRIPT$ENDCLASS
+$CLASS[scene]$SCRIPT[show]## Scene $VAR[me.id]: $VAR[me.location]$CR$FOR[me.things,t]$ONDO[t,show]$ENDFOR[]$ENDSCRIPT$ENDCLASS
+$CLASS[fact]$SCRIPT[show]*$VAR[me.com]*$CR$ENDSCRIPT$ENDCLASS
+$CLASS[tirade]$SCRIPT[show]$VAR[me.speaker]:$CR$FOR[me.sentences,s]$ONDO[s,show]$ENDFOR[]$CR$ENDSCRIPT$ENDCLASS
+$CLASS[sentence]$SCRIPT[show]> $VAR[me.rol]$CR$ENDSCRIPT$ENDCLASS
+$FOR[top.acts,a]$ONDO[a,show]$ENDFOR[]````
+````
+Yes, GDL has some sort of object abstraction as you can invoke script on classes very similar to C++ virtual functions.
+This code will generate [markdown](./test/theater/Hamlet.md) that can easily be turned into this nice [PDF](./test/theater/Hamlet.pdf).
 
 ## How could that be!
 WalkEngine executes as follow:
@@ -128,6 +146,7 @@ WalkEngine normally takes four parameters:
 
 ## History
 I developed this code generator in 1996 while working on *IVS* (an early VoD system built on top of *Aperios OS*) at Sony Europe.
-On Aperios OS, read [SONY'S PLAN FOR WORLD RECREATION](https://www.wired.com/1999/11/sony-3/) by David Sheff, 1999.
-
+At that time it was mostly used to convert [IDL](https://en.wikipedia.org/wiki/Interface_description_language) into C++ or HTML and to draw [Message Sequence Charts](https://en.wikipedia.org/wiki/Message_sequence_chart) from text.
 *-To be completed-*
+
+On Aperios OS, read [SONY'S PLAN FOR WORLD RECREATION](https://www.wired.com/1999/11/sony-3/) by David Sheff, 1999.
