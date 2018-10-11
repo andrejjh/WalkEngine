@@ -103,5 +103,5 @@ $ENDCLASS
 ````
 The tirade.explore script invokes *redirect* to change the output file.
 
-The file name is constructed as: './tirades/<character>.md'.
-See [BERNARDO's text](../test/tirades/BERNARDO.md) and the others.
+The file pathname is constructed as: './tirades/{tirade.speaker}.md'.
+See [BERNARDO's text](../test/theater/tirades/BERNARDO.md) and the others.
