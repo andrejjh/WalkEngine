@@ -1462,9 +1462,9 @@ void cl_GenOfstream::Run(){
       cl_GenString fullPath;
       fullPath = defDir;
       fullPath.Concat(file);
-      defOs.open(fullPath);
+      defOs.open(fullPath,std::ofstream::out | std::ofstream::app);
       if (defOs.good())
-	std::cout << "Generating...\"" << fullPath << "\"" << std::endl;
+	std::cout << "Streaming to...\"" << fullPath << "\"" << std::endl;
       else
 	cl_GenNode::FatalGenericError("Cannot open ofstream",fullPath);
    }

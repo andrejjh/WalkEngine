@@ -1,0 +1,24 @@
+$CLASS[act]
+$SCRIPT[explore]$FOR[me.scenes,s]$ONDO[s,explore]$ENDFOR[]$ENDSCRIPT
+$SCRIPT[show]Act $VAR[me.id],$ENDSCRIPT
+$ENDCLASS
+$CLASS[scene]
+$SCRIPT[explore]$FOR[me.things,t]$ONDO[t,explore]$ENDFOR[]$ENDSCRIPT
+$SCRIPT[show]$ONDO[me.parent,show]Scene $VAR[me.id]:$CR$ENDSCRIPT
+$ENDCLASS
+$CLASS[fact]
+$SCRIPT[explore]$ENDSCRIPT
+$ENDCLASS
+$CLASS[tirade]
+$SCRIPT[explore]
+$SET[me.speaker,fileName]$DO[redirect]
+$FOR[me.sentences,s]$ONDO[s,show]$ENDFOR[]$CR
+$ENDSCRIPT
+$ENDCLASS
+$CLASS[sentence]
+$SCRIPT[show]> $VAR[me.rol]$CR$ENDSCRIPT
+$ENDCLASS
+$SCRIPT[redirect]
+$SETSTRING["./tirades/",file]$APPEND[fileName,file]$APPENDSTRING[".md",file]$OFSTREAM[file]
+$ENDSCRIPT
+$FOR[top.acts,a]$ONDO[a,explore]$ENDFOR[]

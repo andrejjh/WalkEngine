@@ -84,3 +84,24 @@ Euh..yes, as you can see GDL has some sort of object abstraction:
 * *\$ONDO[]* invokes a class script and of course, the script may vary from class to class.
 
 So far so good. This code will generate [markdown](./test/theater/Hamlet.md) that can easily be turned into this nice [PDF](./test/theater/Hamlet.pdf).
+
+## E. More than one output
+Here we will split Hamlet's text into several files,so that each character get its own text.
+````
+$SCRIPT[redirect]
+$SETSTRING["./tirades/",file]$APPEND[fileName,file]$APPENDSTRING[".md",file]$OFSTREAM[file]
+$ENDSCRIPT
+````
+The *redirect* GDL script will open(in append mode) the character file to add the tirade's sentences.
+````
+$CLASS[tirade]
+$SCRIPT[explore]
+$SET[me.speaker,fileName]$DO[redirect]
+$FOR[me.sentences,s]$ONDO[s,show]$ENDFOR[]$CR
+$ENDSCRIPT
+$ENDCLASS
+````
+The tirade.explore script invokes *redirect* to change the output file.
+
+The file name is constructed as: './tirades/<character>.md'.
+See [BERNARDO's text](../test/tirades/BERNARDO.md) and the others.

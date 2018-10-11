@@ -6,9 +6,9 @@ It takes a *grammar*, *input text* and *program(GDL)* to generate *output text(s
 
 ## Key features
 
-* Walk is highly **flexible** and can ingest any  *input text*, as a *grammar* explains how this input should be interpreted.
-* Walk can generate any text , as you describe in a *GDL program* what will appear in the *output text*.
-* Walk follows a **minimalist approach** and only depends on standard C++ Libraries such as *stdio, stdlib, iostream and regex*.
+* Walk is highly **flexible** and can ingest any *input text*, as a *grammar* explains how this input is structured and therefore should be interpreted.
+* Walk can **generate any text** , as you describe in a *GDL program* what will appear in the *output text(s)*.
+* Walk follows a **minimalist approach** and only depends on standard C++ Libraries, i.e. *stdio, stdlib, iostream and regex*.
 * Walk is completely written is C++ and thus **incredibly fast**.
 
 ## Installation
